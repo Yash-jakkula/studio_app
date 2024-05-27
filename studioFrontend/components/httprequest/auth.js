@@ -4,7 +4,8 @@ import authActions from "../../state/auth-slice/auth-slice";
 import store from "../../state";
 import auth from "../../state/auth-slice/auth-slice";
 import { Alert } from "react-native";
-
+import { userActions } from "../../state/user-slice/user-slice";
+import { getAllusers } from "./users";
 //login function to fetch the user valid token for authentication
 // @ post fetch request
 export const userLogin = async({phone,password}) => {
@@ -21,10 +22,10 @@ export const userLogin = async({phone,password}) => {
             const login_result = await token_res.json();
             
             if(login_result.token){    
+                await currentUser(login_result.token);
+                await getAllusers();
                 store.dispatch(authActions.actions.setLoading(false));
                 store.dispatch(authActions.actions.login(true));
-                const val = store.getState( state => state.auth);
-                console.log('value',val);
             }
             else{
               Alert.alert('Invalid Credentails',"please enter a valid mobile number and password to proceed");  
@@ -55,16 +56,25 @@ export const userLogout = async()=>{
     }
 }
 
+// get logged in user using the token 
+// @get request
 export const currentUser = async(token) => {
     try{
         if(token){
-                       
-        }
+               const response = await fetch(`${env.base_url}/users/currentuser/${token}`);
+               const user = await response.json();
+               if(user){
+                store.dispatch(userActions.setCurrentUser(user));        
+                }
+               else{
+                console.error('error fetching user');
+               }
+            }
         else{
-
+            console.error('no valid token');
         }
     }
     catch(err){
-        console.error(`${err}`);
+        console.error(`${err} error from current user`);
     }
 }

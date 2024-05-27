@@ -1,38 +1,44 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {Text, Button, TextInput} from 'react-native-paper';
 import {Image, View, StyleSheet} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
+import { useRoute } from '@react-navigation/native';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6'
-export default function Profile() {
+import { useSelector } from 'react-redux';
+export default function Profile(){
+  const users = useSelector(state=>state.user.users);
+  const route = useRoute();
+  const {id} = route.params;
+  const [user,setUser] = React.useState(users.filter((item) => item._id === id));
   return (
     <>
       <ScrollView contentContainerStyle={{flexGrow: 1}}>
         <View style={styles.userContainer}>
-        <Text style={{color:'#f26622'}} variant='displayMedium'>Sada Photo Studio</Text>
-        <Text style={{color:'white',fontWeight:'bold'}} variant='displaySmall'>ID:MLG 001</Text>
+        <Text style={{color:'#f26622',textAlign:'center'}} variant='displaySmall'>{user[0].studio_name.toUpperCase()}</Text>
+        <Text style={{color:'white',fontWeight:'bold'}} variant='displaySmall'>ID:{user[0].uid}</Text>
         <View style={{height:350,width:'90%'}}>
           <View style={{height:'70%',position:'relative'}}>
           <Image source={require('../assests/profile.jpeg')} style={styles.profile}/>
         </View>
           <View style={styles.profileTextCont}>
-              <Text style={{color:'white',fontWeight:'bold',textAlign:'center'}} variant='headlineLarge'>Jakkula Yashwanth</Text>
-              <Text style={{color:'white',fontWeight:'bold',textAlign:'center'}} variant='headlineMedium'>photographer</Text>
+              <Text style={{color:'white',fontWeight:'bold',textAlign:'center'}} variant='headlineLarge'>{user[0].username}</Text>
+              <Text style={{color:'white',fontWeight:'bold',textAlign:'center'}} variant='headlineMedium'>{user[0].role}</Text>
           </View>
         </View>
         <View>
           <View style={styles.profileInfoCard}>
             <FontAwesome6 name="phone-volume" size={40} color="white" />
-            <Text style={{color:'white'}} variant='titleLarge'>+91 9441713062</Text>
+            <Text style={{color:'white'}} variant='titleLarge'>+91 {user[0].phone}</Text>
           </View>
           
           <View style={styles.dashedLine} />
           <View style={styles.profileInfoCard}>
             <FontAwesome6 name="location-dot" size={40} color="white" />
             <View>
-            <Text style={{color:'white'}} variant='titleLarge'>Sada photo studio, Sbi road</Text>
-            <Text style={{color:'white'}} variant='titleLarge'>Vi: Mulugu, Mandal: Mulugu.</Text>
-            <Text style={{color:'white'}} variant='titleLarge'>Dist:Mulugu, Telangana.</Text>
-            <Text style={{color:'white'}} variant='titleLarge'>Pin:506343</Text>
+            <Text style={{color:'white'}} variant='titleLarge'>{user[0].studio_name}</Text>
+            <Text style={{color:'white'}} variant='titleLarge'>Vi: {user[0].village}</Text>
+            <Text style={{color:'white'}} variant='titleLarge'>Dist:{user[0].district}, {user[0].state}.</Text>
+            <Text style={{color:'white'}} variant='titleLarge'>Pin:{user[0].pincode}</Text>
             </View>
           </View>
           <View style={styles.dashedLine} />

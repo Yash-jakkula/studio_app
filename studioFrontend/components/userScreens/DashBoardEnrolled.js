@@ -16,22 +16,11 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 export default function DashBoardEnrolled({navigation}) {
-  const data = [
-    {
-      name: 'Jakkula Sada nandam',
-      studio: 'Sada Digital Studio',
-      village: 'Mulugu',
-      Phone: '9441713062',
-    },
-    {
-      name: 'Kandula Ravi',
-      studio: 'Niranjan Digital Studio',
-      village: 'Mulugu',
-      Phone: '9392344262',
-    },
-  ];
+  const users = useSelector(state => state.user.users);
+  
   return (
     <>
       <View style={styles.Dashboard}>
@@ -46,10 +35,10 @@ export default function DashBoardEnrolled({navigation}) {
           <View style={styles.cardCont}>
             <View style={{height: '100%', width: '100%'}}>
               <FlatList
-                data={data}
+                data={users}
                 renderItem={({item}) => (
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('Profile')}>
+                    onPress={() => navigation.navigate('Profile',{id:item._id})}>
                     <View style={styles.userContainer}>
                       <View style={{marginRight: 10, flexDirection: 'row'}}>
                         <Image
@@ -64,8 +53,8 @@ export default function DashBoardEnrolled({navigation}) {
                         />
                       </View>
                       <View style={{flex: 2, gap: 3}}>
-                        <Text style={styles.dashText}>{item.name}</Text>
-                        <Text style={styles.dashText}>{item.studio}</Text>
+                        <Text style={styles.dashText}>{item.username}</Text>
+                        <Text style={styles.dashText}>{item.studio_name}</Text>
                         <Text style={styles.dashText}>
                           {item.village} {item.Phone}
                         </Text>
@@ -78,7 +67,7 @@ export default function DashBoardEnrolled({navigation}) {
                               </Button> */}
                       </View>
                       <View>
-                        <Text style={styles.dashText}>Balance : 500/-</Text>
+                        <Text style={styles.dashText}>Balance : {item.amount}/-</Text>
                       </View>
                     </View>
                   </TouchableOpacity>

@@ -4,11 +4,14 @@ import {View, TouchableOpacity, StyleSheet, Image, ScrollView} from 'react-nativ
 import {useIsFocused} from '@react-navigation/native';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6'
 import { userLogout } from '../httprequest/auth';
+import { useSelector } from 'react-redux';
 const CustomDrawerContent = ({navigation}) => {
+// current_user state
+const current_user = useSelector(state => state.user.currentUser);
 
 // local state to validate the role of the user.
 // to hide the admin screen from normal user
-  const [role,setRole] = React.useState('admin');
+  const [role,setRole] = React.useState(current_user.user.role);
 
 // active state to show the active btn color 
 const [active,setActive] = React.useState('t1');
@@ -26,6 +29,8 @@ const logout = async() => {
   navigation.replace('login');
 }
 
+
+
   return (
     <ScrollView contentContainerStyle={{flexGrow:1}}>
     <View style={styles.container}>
@@ -33,7 +38,7 @@ const logout = async() => {
       <TouchableOpacity style={active === 't1' && styles.activeBtn} onPress={() => navigateToScreen('MyProfile')}>
         <View style={styles.drawBtn}>
         <Image source={require('../assests/Logo.png')} style={{width:50,height:50}}/>
-        <Text variant='titleMedium' style={[styles.drawerItem]}>Sada Digital Studio</Text>
+        <Text variant='titleMedium' style={[styles.drawerItem]}>{current_user.user.username}</Text>
         </View>
       </TouchableOpacity>
       </View><View style={styles.drawContent}>
