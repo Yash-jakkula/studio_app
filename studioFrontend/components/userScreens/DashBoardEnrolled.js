@@ -18,14 +18,21 @@ import {
 } from 'react-native';
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import UserDetailsCard from './uesrDetialsCard';
+import SearchComponent from '../helpers/loaders/searchComponent';
+import store from '../../state';
+import { useContext } from 'react';
+import { searchActions } from '../../state/search-item/search-item';
+import { Context } from '../context/OrderContext';
 export default function DashBoardEnrolled({navigation}) {
   const users = useSelector(state => state.user.users);
+  const {setSearchItem,searchItem} = React.useContext(Context);
   
   return (
     <>
       <View style={styles.Dashboard}>
         <View>
-          <Searchbar placeholder="Search" style={{margin: 10}} />
+          <Searchbar placeholder="Search" onChangeText={(text)=>setSearchItem(text)} style={{margin: 10}} />
           <View style={styles.textCont}>
             <Text style={styles.dashText} variant="labelLarge">
               Profiles
@@ -34,45 +41,7 @@ export default function DashBoardEnrolled({navigation}) {
 
           <View style={styles.cardCont}>
             <View style={{height: '100%', width: '100%'}}>
-              <FlatList
-                data={users}
-                renderItem={({item}) => (
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('Profile',{id:item._id})}>
-                    <View style={styles.userContainer}>
-                      <View style={{marginRight: 10, flexDirection: 'row'}}>
-                        <Image
-                          source={{
-                            uri: 'https://th.bing.com/th/id/OIP.Gfp0lwE6h7139625a-r3aAHaHa?rs=1&pid=ImgDetMain',
-                          }}
-                          style={{
-                            height: 70,
-                            width: 70,
-                            borderRadius: 50,
-                          }}
-                        />
-                      </View>
-                      <View style={{flex: 2, gap: 3}}>
-                        <Text style={styles.dashText}>{item.username}</Text>
-                        <Text style={styles.dashText}>{item.studio_name}</Text>
-                        <Text style={styles.dashText}>
-                          {item.village} {item.Phone}
-                        </Text>
-
-                        {/* <Button
-                                onPress={() => navigation.navigate('Profile')}
-                                mode="contained"
-                                style={{width: 100, color: 'white'}}>
-                                more
-                              </Button> */}
-                      </View>
-                      <View>
-                        <Text style={styles.dashText}>Balance : {item.amount}/-</Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                )}
-              />
+              {searchItem.length === 0 ? <UserDetailsCard /> : <SearchComponent /> }
             </View>
           </View>
         </View>

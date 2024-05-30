@@ -8,6 +8,7 @@ import {
   MD3Colors,
   Icon,
 } from 'react-native-paper';
+import {useState} from 'react'
 import {
   View,
   StyleSheet,
@@ -15,107 +16,50 @@ import {
   FlatList,
   ScrollView,
   TouchableOpacity,
+  RefreshControl
 } from 'react-native';
 import React from 'react';
+import TransferDetails from '../AdminScreens/transferDetailsScreen';
+import { useSelector } from 'react-redux';
+import { account_details } from '../httprequest/admin';
 const AdminChanges = () => {
-  const data = [
-    {
-      name: '12/04/2024',
-      studio: 'Telangana State Organisation',
-      village: 'Telangana',
-      Phone: '9441713062',
-      amount: 200,
-    },
-    {
-      name: '15/04/2024',
-      studio: 'District Association',
-      village: 'Mulugu',
-      Phone: '9392344262',
-      amount: 200,
-    },
-    {
-      name: '12/04/2024',
-      studio: 'Telangana State Organisation',
-      village: 'Telangana',
-      Phone: '9441713062',
-      amount: 200,
-    },
-    {
-      name: '15/04/2024',
-      studio: 'District Association',
-      village: 'Mulugu',
-      Phone: '9392344262',
-      amount: 200,
-    },
-  ];
+  const account_details = useSelector(state => state.account_details.account);
+
+  const [refreshing, setRefreshing] = useState(false);
+
 
   return (
     <>
-      <View style={styles.Dashboard}>
-        <View>
-          <View style={styles.cardCont}>
-            <View style={{height: '100%', width: '100%'}}>
-              <FlatList
-                data={data}
-                renderItem={({item}) => (
-                  <TouchableOpacity>
-                    <View style={styles.userContainer}>
-                      <View
-                        style={{
-                          marginRight: 10,
-                        }}
-                      />
-                      <View style={{flex: 2, gap: 3}}>
-                        <Text style={styles.dashText}>{item.name}</Text>
-                        <Text style={styles.dashText}>{item.studio}</Text>
-                        <Text style={styles.dashText}>
-                          {item.village} {item.Phone}
-                        </Text>
-
-                        {/* <Button
-                                onPress={() => navigation.navigate('Profile')}
-                                mode="contained"
-                                style={{width: 100, color: 'white'}}>
-                                more
-                              </Button> */}
-                      </View>
-                      <View>
-                        <Text style={styles.dashText}>
-                          Paid : {item.amount}/-
-                        </Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                )}
-              />
+      {account_details && (
+        <View style={styles.Dashboard}>
+          <View style={{marginBottom:90}}>
+            <View style={styles.cardCont}>
+              <TransferDetails />
             </View>
           </View>
-        </View>
-        <View />
+          <View />
 
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-            marginBottom: 10,
-            position: 'absolute',
-            top: '90%',
-            width: '100%',
-            backgroundColor: '#073C84',
-            padding: 30,
-            borderWidth: 1,
-          }}>
-          <Text variant="titleSmall" style={{color: 'white', fontSize: 20}}>
-            T:2000
-          </Text>
-          <Text variant="titleSmall" style={{color: 'white', fontSize: 20}}>
-            B:1000
-          </Text>
-          <Text variant="titleSmall" style={{color: 'white', fontSize: 20}}>
-            Ex:1000
-          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              marginBottom: 10,
+              position: 'absolute',
+              top: '90%',
+              width: '100%',
+              backgroundColor: '#073C84',
+              padding: 30,
+              borderWidth: 1,
+            }}>
+            <Text variant="titleSmall" style={{ color: 'white', fontSize: 20 }}>
+              T:{account_details.account_details.total}
+            </Text>
+            <Text variant="titleSmall" style={{ color: 'white', fontSize: 20 }}>
+              Ex:{account_details.account_details.extra}
+            </Text>
+          </View>
         </View>
-      </View>
+      )}
     </>
   );
 };
@@ -124,7 +68,6 @@ const styles = StyleSheet.create({
   timeLocText: {
     color: '#FFFFFF99',
   },
-
   userContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -187,3 +130,4 @@ const styles = StyleSheet.create({
 });
 
 export default AdminChanges;
+

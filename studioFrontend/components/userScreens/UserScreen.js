@@ -16,7 +16,9 @@ export default function UserScreen() {
         <Text style={{color:'white',fontWeight:'bold'}} variant='displaySmall'>ID : {current_user.user.uid}</Text>
         <View style={{height:350,width:'90%'}}>
           <View style={{height:'70%',position:'relative'}}>
-          <Image source={require('../assests/profile.jpeg')} style={styles.profile}/>
+          <Image source={{
+            uri:'https://th.bing.com/th/id/OIP.Gfp0lwE6h7139625a-r3aAHaHa?rs=1&pid=ImgDetMain'
+          }} style={styles.profile}/>
         </View>
           <View style={styles.profileTextCont}>
               <Text style={{color:'white',fontWeight:'bold',textAlign:'center'}} variant='titleLarge'>{current_user.user.username}</Text>

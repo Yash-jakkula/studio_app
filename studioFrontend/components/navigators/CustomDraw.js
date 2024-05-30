@@ -37,7 +37,9 @@ const logout = async() => {
       <View style={styles.drawContent}>
       <TouchableOpacity style={active === 't1' && styles.activeBtn} onPress={() => navigateToScreen('MyProfile')}>
         <View style={styles.drawBtn}>
-        <Image source={require('../assests/Logo.png')} style={{width:50,height:50}}/>
+        <Image source={{
+          uri:'https://th.bing.com/th/id/OIP.Gfp0lwE6h7139625a-r3aAHaHa?rs=1&pid=ImgDetMain'
+        }} style={{width:50,height:50}}/>
         <Text variant='titleMedium' style={[styles.drawerItem]}>{current_user.user.username}</Text>
         </View>
       </TouchableOpacity>

@@ -6,6 +6,9 @@ import auth from "../../state/auth-slice/auth-slice";
 import { Alert } from "react-native";
 import { userActions } from "../../state/user-slice/user-slice";
 import { getAllusers } from "./users";
+import { account_details, getTransferAccountDetails } from "./admin";
+import TransferDetails from "../AdminScreens/transferDetailsScreen";
+import token, { tokenActions } from "../../state/search-item/search-item";
 //login function to fetch the user valid token for authentication
 // @ post fetch request
 export const userLogin = async({phone,password}) => {
@@ -22,8 +25,11 @@ export const userLogin = async({phone,password}) => {
             const login_result = await token_res.json();
             
             if(login_result.token){    
+                store.dispatch(tokenActions.setToken(login_result.token));
                 await currentUser(login_result.token);
                 await getAllusers();
+                await account_details();
+                await getTransferAccountDetails();
                 store.dispatch(authActions.actions.setLoading(false));
                 store.dispatch(authActions.actions.login(true));
             }
@@ -49,6 +55,7 @@ export const userLogout = async()=>{
         const logout_result = await response.json();
         if(logout_result){
             store.dispatch(authActions.actions.login(false));
+            store.dispatch(tokenActions.setToken(""))
         }
     }
     catch(err){
@@ -67,11 +74,11 @@ export const currentUser = async(token) => {
                 store.dispatch(userActions.setCurrentUser(user));        
                 }
                else{
-                console.error('error fetching user');
+                Alert.alert(`session expired`,`please logout and login again`);
                }
             }
         else{
-            console.error('no valid token');
+            Alert.alert(`refreshing failed`,`try again later`)
         }
     }
     catch(err){

@@ -8,6 +8,12 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
+import AddMember from './addMember';
+import AddAmount from './addAmount';
+import TransferAmount from './transferAmount';
+import { activeUsers } from '../httprequest/admin';
+import TransferDetails from './transferDetailsScreen';
+import HoldMember from './holdMember';
 const Admin = () => {
   const [visibleMember, setVisibleMember] = React.useState(false);
   const [visibleAmount, setVisibleAmount] = React.useState(false);
@@ -20,24 +26,12 @@ const Admin = () => {
   const hideModal = () => setVisibleMember(false);
   const hideModalHold = () => setVisibleHold(false);
   const showModal = () => setVisibleMember(false);
-
-  const data = [
-    {
-      name: '12/04/2024',
-      studio: 'Telangana State Organisation',
-      village: 'Telangana',
-      Phone: '9441713062',
-      amount: 200,
-    },
-    {
-      name: '15/04/2024',
-      studio: 'District Association',
-      village: 'Mulugu',
-      Phone: '9392344262',
-      amount: 200,
-    },
-
-  ];
+  const [activeCount,setActiveCount] = React.useState(1);
+  const transferRequest = async()=>{
+      const active_members = await activeUsers();
+      setActiveCount(active_members);
+      setVisibleTransfer(true);
+  }
 
   return (
     <>
@@ -48,36 +42,7 @@ const Admin = () => {
           justifyContent: 'space-between',
         }}>
         <View style={styles.cardCont}>
-          <View style={{height: '100%', width: '100%'}}>
-            <FlatList
-              data={data}
-              renderItem={({item}) => (
-                <TouchableOpacity>
-                  <View style={styles.userContainer}>
-                    <View>
-                      <Text style={styles.dashText}>{item.name}</Text>
-                      <Text style={styles.dashText}>{item.studio}</Text>
-                      <Text style={styles.dashText}>
-                        {item.village} {item.Phone}
-                      </Text>
-
-                      {/* <Button
-                                onPress={() => navigation.navigate('Profile')}
-                                mode="contained"
-                                style={{width: 100, color: 'white'}}>
-                                more
-                              </Button> */}
-                    </View>
-                    <View>
-                      <Text style={styles.dashText}>
-                        Paid : {item.amount}/-
-                      </Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
+          <TransferDetails />
         </View>
         <Portal>
           <View style={styles.plus}>
@@ -123,7 +88,7 @@ const Admin = () => {
             <Button
               mode="contained"
               buttonColor="red"
-              onPress={() => setVisibleTransfer(true)}>
+              onPress={transferRequest}>
               Transfer
             </Button>
             <Button
@@ -136,83 +101,35 @@ const Admin = () => {
         </Modal>
 
         <Portal>
+          
           <Modal
             visible={visibleMember}
             onDismiss={hideModal}
             contentContainerStyle={styles.containerStyle}>
-            <View style={{gap: 10}}>
-              <TextInput placeholder="Enter ID" />
-              <TextInput placeholder="Enter Phone" />
-              <TextInput placeholder="Enter user name" />
-              <TextInput placeholder="Enter studio name" />
-              <TextInput placeholder="Enter Nominee" />
-              <TextInput placeholder="Enter Village" />
-              <TextInput placeholder="Enter District" />
-              <TextInput placeholder="Enter State" />
-              <TextInput placeholder="Enter pin" />
-              <TextInput placeholder="Enter initial amount" />
-              <TextInput placeholder="Enter Extra Amount" />
-              <Button mode="contained" style={{marginTop: 10}}>
-                Add member
-              </Button>
-              <Button mode="contained" onPress={() => setVisibleMember(false)}>
-                Cancel
-              </Button>
-            </View>
+           <ScrollView contentContainerStyle={{flexGrow:1}}>
+            <AddMember setVisibleMember={setVisibleMember} />
+            </ScrollView>
           </Modal>
 
           <Modal
             visible={visibleAmount}
             onDismiss={hideModalAmount}
             contentContainerStyle={styles.containerStyle}>
-            <View style={{gap: 10}}>
-              <TextInput placeholder="Enter ID/Phone" />
-              <TextInput placeholder="Enter Amount" />
-              <TextInput placeholder="Enter Extra Amount" />
-              <Button mode="contained" style={{marginTop: 10}}>
-                Add Amount
-              </Button>
-              <Button mode="contained" onPress={() => setVisibleAmount(false)}>
-                Cancel
-              </Button>
-            </View>
+            <AddAmount setVisibleAmount={setVisibleAmount}/>
           </Modal>
 
           <Modal
             visible={visibleTranser}
             onDismiss={hideModalTransfer}
             contentContainerStyle={styles.containerStyle}>
-            <View style={{gap: 10}}>
-              <TextInput placeholder="Enter Phone" />
-              <TextInput placeholder="Enter Amount" />
-              <TextInput placeholder="Enter association Name" />
-              <TextInput placeholder="Enter A/c holder Name" />
-
-              <Button mode="contained" style={{marginTop: 10}}>
-                Add
-              </Button>
-              <Button
-                mode="contained"
-                onPress={() => setVisibleTransfer(false)}>
-                Cancel
-              </Button>
-            </View>
+            <TransferAmount transfer_amount={activeCount} setVisibleTransfer={setVisibleTransfer} />
           </Modal>
 
           <Modal
             visible={visibleHold}
             onDismiss={hideModalHold}
             contentContainerStyle={styles.containerStyle}>
-            <View style={{gap: 10}}>
-              <TextInput placeholder="Enter Phone/Id" />
-              <TextInput placeholder="Enter Reason" />
-              <Button mode="contained" style={{marginTop: 10}}>
-                Hold
-              </Button>
-              <Button mode="contained" onPress={() => setVisibleHold(false)}>
-                Cancel
-              </Button>
-            </View>
+            <HoldMember setVisibleHold={setVisibleHold}/>
           </Modal>
         </Portal>
       </View>

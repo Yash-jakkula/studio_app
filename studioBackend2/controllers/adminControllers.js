@@ -1,7 +1,6 @@
 const AccountModal = require('../Model/Account');
 const Transfer = require('../Model/Transfer');
 const UserModel = require('../Model/Users');
-
 const addNewUser = async function(req,res,next) {
     try{ 
      if(req.body && req.body.amount > req.body.extra){
@@ -12,7 +11,7 @@ const addNewUser = async function(req,res,next) {
            const user = await UserModel.create(req.body);
            if(user){
             console.log(req.body,'reqbody');
-            const acc_change = await AccountModal.findOneAndUpdate({association_code:req.body.association_code},{total:acc_update[0].total,extra:extra+req.body.extra})
+            const acc_change = await AccountModal.findOneAndUpdate({association_code:req.body.association_code},{total:acc_update[0].total,$inc:{extra:+req.body.extra}})
             return res.status(200).json({
                 message:'user created succesfully'
             })
@@ -94,11 +93,17 @@ const getActiveMembers = async(req,res,next) => {
 
 const holdUser = async(req,res,next) => {
     try{
-        const update_user = await UserModel.findByIdAndUpdate(req.body.params,{status:false});
+        const {phone} = req.body;
+        const update_user = await UserModel.findOneAndUpdate({phone:phone},{status:false});
         if(update_user){
             res.status(200).json({
                 message:'updated user status'
             })   
+        }
+        else{
+            res.status(500).json({
+                message:'server failed'
+            })
         }
     }
     catch(err){
@@ -111,11 +116,16 @@ const holdUser = async(req,res,next) => {
 
 const updateUserAmount = async(req,res,next)=>{
     try{
-        const {phone,amount} = req.body;
-        console.log(phone,amount);
-        const update_user_amount = await UserModel.findOneAndUpdate({phone:phone},{$inc:{amount:+amount}});
-        console.log(update_user_amount);
-        if(update_user_amount && update_user_amount.amount >= 10){
+        const {phone,amount,extra,association_code} = req.body;
+        console.log(association_code,'code');
+        if(phone && amount && extra && association_code){
+        const update_user_amount = await UserModel.findOneAndUpdate({phone:phone},{$inc:{amount:+(amount-extra),extra:+extra}});
+        const account_amount_update = await AccountModal.findOneAndUpdate({association_code:association_code},{$inc:{total:+(amount-extra),extra:+extra}});
+        console.log('account_update_info',account_amount_update);
+        if(!account_amount_update){
+            await UserModel.findOneAndUpdate({phone:phone},{$inc:{amount:-(amount - extra),extra:-extra}});
+        }
+        if(update_user_amount && account_amount_update && update_user_amount.amount >= 10){
             const update_user_status = await UserModel.findOneAndUpdate({phone:req.body.phone},{status:true});
             if(update_user_status){
                 return res.status(200).json({
@@ -127,6 +137,12 @@ const updateUserAmount = async(req,res,next)=>{
             return res.status(500).json({message:'server error please try again'})
         }
     }
+    else{
+        return res.status(404).json({
+            message:'please fill all the details'
+        })
+    }
+    }
     catch(err){
         return res.status(500).json({
             message:'Server didnot respond'
@@ -134,4 +150,25 @@ const updateUserAmount = async(req,res,next)=>{
     }
 }
 
-module.exports = {addNewUser,transferMoney,getActiveMembers,holdUser,updateUserAmount}
+const transferAccountDetails = async(req,res,next) =>{
+    try{
+    const transferDetails = await Transfer.find();
+    if(transferDetails){
+        return res.status(200).json({
+            transferDetails
+        })
+    }
+    else{
+        return res.status(404).json({
+            message:'details not found'
+        })
+    }
+}
+catch(err){
+    return res.status(500).json({
+        message:'server didnot respond'
+    })
+}
+}
+
+module.exports = {addNewUser,transferMoney,getActiveMembers,holdUser,updateUserAmount,transferAccountDetails}

@@ -2,7 +2,7 @@ const UserModel = require('../Model/Users');
 const jwt = require('jsonwebtoken');
 const twilio = require('twilio');
 const dotenv = require("dotenv");
-
+const AccountModal = require('../Model/Account');
 dotenv.config({path:'../config/.env'})
 
 
@@ -145,6 +145,19 @@ const resetPassword = async(req,res,next) => {
     }
 }
 
+const getAccountDetails = async(req,res,next) => {
+    try{
+        const account_details = await AccountModal.findOne({association_code:req.body.association_code});
+        if(account_details) return res.status(200).json({account_details});
+        else return res.status(404).json({message:'no account found'})
+    }
+    catch(err){
+        res.status(500).json({
+            message:'server request failed'
+        })
+    }
+}
+
 const sendTokenResponse = async(user,statuscode,res) => {
    
     const token = jwt.sign({id:user._id},process.env.JWT_SECRET,{
@@ -167,4 +180,4 @@ const sendTokenResponse = async(user,statuscode,res) => {
     })
 }
 
-module.exports = {userLogin,userLogout,updateUser,getAllusers,getLoggedInUser}
+module.exports = {userLogin,userLogout,updateUser,getAllusers,getLoggedInUser,getAccountDetails}

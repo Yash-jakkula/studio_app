@@ -1,4 +1,4 @@
-const {userLogin, userLogout, updateUser, getAllusers, getLoggedInUser} = require('../controllers/userController');
+const {userLogin, userLogout, updateUser, getAllusers, getLoggedInUser, getAccountDetails} = require('../controllers/userController');
 const {addNewUser} = require('../controllers/adminControllers');
 const express = require('express');
 const userRouter = express.Router();
@@ -13,6 +13,7 @@ userRouter.route('/updateuser/:id').put(updateUser);
 
 userRouter.route('/allusers').get(getAllusers);
 
+userRouter.route('/accountdetails').put(getAccountDetails);
 userRouter.route('/currentuser/:id').get(getLoggedInUser);
 
 module.exports = userRouter;
